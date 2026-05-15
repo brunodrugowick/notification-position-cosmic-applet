@@ -1,4 +1,3 @@
-use crate::fl;
 use crate::notifications;
 use cosmic::app::Task;
 use cosmic::iced::core::Rectangle;
@@ -12,8 +11,7 @@ use cosmic_notifications_config::NotificationsConfig;
 pub struct Applet {
     core: cosmic::Core,
     popup: Option<Id>,
-    notifications_config: NotificationsConfig,
-    status: String,
+    notifications_enabled: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -21,9 +19,8 @@ pub enum Message {
     PopupClosed(Id),
     Surface(cosmic::surface::Action),
     ConfigChanged(NotificationsConfig),
-    ApplyTopCenter,
-    ResetDefaults,
-    ConfigSaved(Result<NotificationsConfig, String>),
+    SetEnabled(bool),
+    ConfigSaved(Result<bool, String>),
 }
 
 impl cosmic::Application for Applet {
@@ -49,8 +46,7 @@ impl cosmic::Application for Applet {
         let applet = Self {
             core,
             popup: None,
-            status: status_for(&notifications_config),
-            notifications_config,
+            notifications_enabled: notifications::is_top_center(&notifications_config),
         };
 
         (applet, Task::none())
@@ -96,30 +92,13 @@ impl cosmic::Application for Applet {
                             popup_settings
                         },
                         Some(Box::new(|state: &Self| {
-                            let content = widget::column::with_capacity(7)
-                                .spacing(8)
-                                .push(widget::text::title4(fl!("popup-title")))
-                                .push(widget::text(fl!(
-                                    "current-anchor",
-                                    anchor = notifications::anchor_name(
-                                        &state.notifications_config.anchor
-                                    )
-                                )))
-                                .push(widget::text(fl!("top-center-note")))
-                                .push(
-                                    widget::button::text(fl!("apply-center"))
-                                        .on_press(Message::ApplyTopCenter),
-                                )
-                                .push(
-                                    widget::button::text(fl!("reset-defaults"))
-                                        .on_press(Message::ResetDefaults),
-                                )
-                                .push(widget::divider::horizontal::default())
-                                .push(widget::text(state.status.as_str()));
+                            let content = widget::container(
+                                widget::toggler(state.notifications_enabled)
+                                    .on_toggle(Message::SetEnabled),
+                            )
+                            .padding(12);
 
-                            Element::from(state.core.applet.popup_container(
-                                widget::container(content).padding(8),
-                            ))
+                            Element::from(state.core.applet.popup_container(content))
                                 .map(cosmic::Action::App)
                         })),
                     ))
@@ -152,29 +131,27 @@ impl cosmic::Application for Applet {
                 ));
             }
             Message::ConfigChanged(config) => {
-                self.notifications_config = config;
-                self.status = status_for(&self.notifications_config);
+                self.notifications_enabled = notifications::is_top_center(&config);
             }
-            Message::ApplyTopCenter => {
+            Message::SetEnabled(enabled) => {
                 return Task::perform(
-                    async { notifications::apply_top_center().map_err(|err| err.to_string()) },
-                    |result| cosmic::Action::App(Message::ConfigSaved(result)),
-                );
-            }
-            Message::ResetDefaults => {
-                return Task::perform(
-                    async { notifications::reset_defaults().map_err(|err| err.to_string()) },
+                    async move {
+                        if enabled {
+                            notifications::apply_top_center()
+                                .map(|_| true)
+                                .map_err(|err| err.to_string())
+                        } else {
+                            notifications::reset_defaults()
+                                .map(|_| false)
+                                .map_err(|err| err.to_string())
+                        }
+                    },
                     |result| cosmic::Action::App(Message::ConfigSaved(result)),
                 );
             }
             Message::ConfigSaved(result) => match result {
-                Ok(config) => {
-                    self.notifications_config = config;
-                    self.status = status_for(&self.notifications_config);
-                }
-                Err(err) => {
-                    self.status = fl!("status-error", error = err);
-                }
+                Ok(enabled) => self.notifications_enabled = enabled,
+                Err(_err) => {}
             },
         }
 
@@ -183,13 +160,5 @@ impl cosmic::Application for Applet {
 
     fn style(&self) -> Option<cosmic::iced::theme::Style> {
         Some(cosmic::applet::style())
-    }
-}
-
-fn status_for(config: &NotificationsConfig) -> String {
-    if notifications::is_top_center(config) {
-        fl!("status-center")
-    } else {
-        fl!("status-not-center")
     }
 }

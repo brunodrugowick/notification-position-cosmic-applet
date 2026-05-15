@@ -3013,11 +3013,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "cosmic-notifications-config",
- "futures-util",
- "i18n-embed",
- "i18n-embed-fl",
  "libcosmic",
- "rust-embed",
  "tokio",
 ]
 

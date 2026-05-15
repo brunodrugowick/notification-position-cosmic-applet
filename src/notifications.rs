@@ -28,19 +28,6 @@ pub fn is_top_center(config: &NotificationsConfig) -> bool {
     matches!(config.anchor, Anchor::Top)
 }
 
-pub fn anchor_name(anchor: &Anchor) -> &'static str {
-    match anchor {
-        Anchor::Top => "Top",
-        Anchor::Bottom => "Bottom",
-        Anchor::Right => "Right",
-        Anchor::Left => "Left",
-        Anchor::TopLeft => "TopLeft",
-        Anchor::TopRight => "TopRight",
-        Anchor::BottomLeft => "BottomLeft",
-        Anchor::BottomRight => "BottomRight",
-    }
-}
-
 fn save(config: &NotificationsConfig) -> Result<()> {
     let helper =
         Config::new(ID, NotificationsConfig::VERSION).context("failed to open COSMIC config")?;
