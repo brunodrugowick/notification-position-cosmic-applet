@@ -1,0 +1,30 @@
+[package]
+name = "notification-position-cosmic"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "COSMIC applet to move notifications to the top-center position."
+
+[dependencies]
+anyhow = "1.0"
+futures-util = "0.3.31"
+i18n-embed = { version = "0.16", features = ["fluent-system", "desktop-requester"] }
+i18n-embed-fl = "0.10"
+rust-embed = "8.8.0"
+tokio = { version = "1.48.0", features = ["full"] }
+
+[dependencies.cosmic-notifications-config]
+git = "https://github.com/pop-os/cosmic-notifications.git"
+package = "cosmic-notifications-config"
+
+[dependencies.libcosmic]
+git = "https://github.com/pop-os/libcosmic.git"
+features = [
+    "applet",
+    "applet-token",
+    "dbus-config",
+    "multi-window",
+    "tokio",
+    "wayland",
+    "winit",
+]

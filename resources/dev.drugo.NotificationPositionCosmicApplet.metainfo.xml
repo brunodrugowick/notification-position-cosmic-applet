@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.drugo.NotificationPositionCosmicApplet</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Notification Position</name>
+  <summary>Applet for changing COSMIC notification placement</summary>
+  <launchable type="desktop-id">dev.drugo.NotificationPositionCosmicApplet.desktop</launchable>
+  <provides>
+    <id>com.system76.CosmicApplet</id>
+    <binaries>
+      <binary>notification-position-cosmic</binary>
+    </binaries>
+  </provides>
+  <categories>
+    <category>Settings</category>
+    <category>COSMIC</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+</component>

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Notification Position
+Comment=Applet for changing COSMIC notification placement
+Type=Application
+Icon=dev.drugo.NotificationPositionCosmicApplet
+Exec=notification-position-cosmic %F
+Terminal=false
+StartupNotify=true
+Categories=COSMIC;Settings;
+Keywords=COSMIC;Notifications;Position;
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicHoverPopup=Auto
+MimeType=

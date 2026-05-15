@@ -1,0 +1,11 @@
+app-title = Notification Position
+popup-title = Notifications
+current-anchor = Current anchor: {$anchor}
+top-center-note = COSMIC represents top-center notifications as the `Top` anchor.
+apply-center = Apply top-center
+reset-defaults = Reset defaults
+status-center = Notifications are currently using the top-center anchor.
+status-not-center = Notifications are not using the top-center anchor.
+status-applied = Top-center notification placement was applied.
+status-reset = Notification settings were reset to COSMIC defaults.
+status-error = Failed to update notifications: {$error}
